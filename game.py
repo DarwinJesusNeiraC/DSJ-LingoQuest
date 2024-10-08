@@ -9,6 +9,9 @@
 '''
 import pygame as pg
 from random import randint, uniform
+#from pygame.locals import *
+from character import Character
+from dialogue import Dialogue
 
 vec = pg.math.Vector2
 WIDTH = 800
@@ -133,7 +136,15 @@ clock = pg.time.Clock()
 all_sprites = pg.sprite.Group()
 obstacles = pg.sprite.Group()
 mobs = pg.sprite.Group()
-bg_image = pg.image.load("assets/floor.jpeg").convert()  # Cambia la ruta a tu imagen de fondo
+bg_image = pg.image.load('assets/floor.jpeg').convert()  # Cambia la ruta a tu imagen de fondo
+
+# Cargar personajes
+inca = Character('assets/inca.png', 100, 100, 50, 50)
+chasqui = Character('assets/chasqui.png', 400, 300, 50, 50)
+
+# Crear diálogo
+dialogue_text = "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!"
+dialogue = Dialogue(WIDTH, HEIGHT, dialogue_text)
 
 # Crear obstáculos en las esquinas
 Obstacle(0, 0, 150, 150, shape="rect", image = "assets/hospital.png")  # esquina superior izquierda
@@ -156,6 +167,7 @@ while running:
     for event in pg.event.get():
         if event.type == pg.QUIT:
             running = False
+            
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_ESCAPE:
                 running = False
@@ -165,6 +177,20 @@ while running:
                 show_vectors = not show_vectors
             if event.key == pg.K_m:
                 Mob()
+        # Mover al inca con las teclas
+    keys = pg.key.get_pressed()
+    inca.move(keys, 5)
+
+    # Dibujar personajes
+    inca.draw(screen)
+    chasqui.draw(screen)
+
+    # Detectar colisión y mostrar diálogo
+    if inca.is_collision(chasqui):
+        dialogue.show(screen)
+    else:
+        dialogue.reset()
+                    
     if not paused:
         all_sprites.update()
     pg.display.set_caption("{:.2f}".format(clock.get_fps()))
