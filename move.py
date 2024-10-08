@@ -24,6 +24,8 @@ YELLOW = (255, 255, 0)
 DARKGRAY = (40, 40, 40)
 BROWN = (139, 69, 19)
 
+
+
 # Mob properties
 MOB_SIZE = 32
 MAX_SPEED = 4
@@ -103,7 +105,7 @@ class Mob(pg.sprite.Sprite):
                 self.vel = diff  # Aplicar la nueva dirección
 
         self.rect.center = self.pos
-
+"""
 class Obstacle(pg.sprite.Sprite):
     def __init__(self, x, y, w, h):
         self.groups = all_sprites, obstacles
@@ -128,6 +130,50 @@ Obstacle(WIDTH - 150, HEIGHT - 150, 150, 150)  # esquina inferior derecha
 
 # Crear el obstáculo circular en el centro
 center_circle_rect = pg.Rect(WIDTH//2 - 100, HEIGHT//2 - 100, 200, 200)
+"""
+
+class Obstacle(pg.sprite.Sprite):
+    def __init__(self, x, y, w, h, shape="rect", image = None):
+        self.groups = all_sprites, obstacles
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.shape = shape  # Puede ser 'rect' o 'circle'
+        
+        if self.shape == "rect":
+            # Si el obstáculo es un rectángulo
+            #self.image = pg.Surface((w, h))
+            #self.image.fill(WHITE)
+            #self.image = pg.image.load(image).convert_alpha()  # Carga la imagen cuadrada
+            self.image = pg.image.load(image).convert_alpha() if image else pg.Surface((w, h))
+            if image:  # Si se proporciona una imagen, escalarla
+                self.image = pg.transform.scale(self.image, (w, h))
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+        
+        elif self.shape == "circle":
+            # Si el obstáculo es un círculo
+            #self.image = pg.Surface((w, h), pg.SRCALPHA)  # Superficie con transparencia
+            #pg.draw.circle(self.image, WHITE, (w // 2, h // 2), w // 2)  # Dibujar el círculo
+            self.image = pg.image.load(image).convert_alpha()  # Carga la imagen cuadrada
+            self.rect = self.image.get_rect()
+            self.rect.center = (x, y)
+
+pg.init()
+screen = pg.display.set_mode((WIDTH, HEIGHT))
+clock = pg.time.Clock()
+all_sprites = pg.sprite.Group()
+obstacles = pg.sprite.Group()
+mobs = pg.sprite.Group()
+bg_image = pg.image.load("Imagenes/floor.jpeg").convert()  # Cambia la ruta a tu imagen de fondo
+
+# Crear obstáculos en las esquinas
+Obstacle(0, 0, 150, 150, shape="rect", image = "Imagenes/hospital.png")  # esquina superior izquierda
+Obstacle(WIDTH - 150, 0, 150, 150, shape="rect", image = "Imagenes/house.png")  # esquina superior derecha
+Obstacle(0, HEIGHT - 150, 150, 150, shape="rect", image = "Imagenes/market.png")  # esquina inferior izquierda
+Obstacle(WIDTH - 150, HEIGHT - 150, 150, 150, shape="rect", image = "Imagenes/market.png")  # esquina inferior derecha
+
+# Crear el obstáculo circular en el centro
+Obstacle(WIDTH // 2, HEIGHT // 2, 200, 200, shape="circle", image = "Imagenes/font.png")  # Círculo en el centro
 
 # Crear mobs
 for i in range(5):
@@ -154,10 +200,12 @@ while running:
         all_sprites.update()
     pg.display.set_caption("{:.2f}".format(clock.get_fps()))
     screen.fill(DARKGRAY)
+    screen.blit(bg_image, (0, 0))  # Dibujar el fondo
+
 
     # Dibujar los obstáculos (cuadrados blancos y círculo central)
     all_sprites.draw(screen)
-    pg.draw.ellipse(screen, WHITE, center_circle_rect)  # Dibuja el círculo central
+    #pg.draw.ellipse(screen, WHITE, center_circle_rect)  # Dibuja el círculo central
 
     if show_vectors:
         for sprite in mobs:
