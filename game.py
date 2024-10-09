@@ -3,7 +3,7 @@
 #               : Nohelia Estefhania Tacca Apaza
 #               : Angel Eduardo Hincho Jove
 # @Email        : dneirac@unsa.edu.pe
-# @File         : move
+# @File         : game
 #
 # @Description  : 
 '''
@@ -12,6 +12,7 @@ from random import randint, uniform
 #from pygame.locals import *
 from character import Character
 from dialogue import Dialogue
+import subprocess
 
 vec = pg.math.Vector2
 WIDTH = 800
@@ -139,8 +140,12 @@ mobs = pg.sprite.Group()
 bg_image = pg.image.load('assets/floor.jpeg').convert()  # Cambia la ruta a tu imagen de fondo
 
 # Cargar personajes
-inca = Character('assets/inca.png', 100, 100, 50, 50)
-chasqui = Character('assets/chasqui.png', 400, 300, 50, 50)
+#inca = Character('assets/inca.png', 100, 100, 50, 50)
+#chasqui = Character('assets/chasqui.png', 400, 300, 50, 50)
+# Cargar personajes
+inca = Character('assets/inca.png', WIDTH // 2, HEIGHT // 2 - 80, 50, 50)  # Arriba de la fuente
+chasqui = Character('assets/chasqui.png', WIDTH // 2, HEIGHT // 2 + 80, 50, 50)  # Debajo de la fuente
+
 
 # Crear diálogo
 dialogue_text = "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!"
@@ -162,6 +167,7 @@ for i in range(5):
 paused = False
 show_vectors = False
 running = True
+game_won = False
 while running:
     clock.tick(FPS)
     for event in pg.event.get():
@@ -180,25 +186,35 @@ while running:
         # Mover al inca con las teclas
     keys = pg.key.get_pressed()
     inca.move(keys, 5)
+    if not paused:
+        all_sprites.update()
 
+    # Fill the screen and draw background first
+    screen.fill(DARKGRAY)
+    screen.blit(bg_image, (0, 0))  # Draw background
+
+    all_sprites.draw(screen)
     # Dibujar personajes
     inca.draw(screen)
     chasqui.draw(screen)
 
     # Detectar colisión y mostrar diálogo
-    if inca.is_collision(chasqui):
+    if inca.is_collision(chasqui) and not game_won:
         dialogue.show(screen)
-    else:
+        pg.display.flip()  # Ensure the dialogue is displayed before the next step
+        pg.time.delay(2000)  # Pause for 2 seconds to let the player read the dialogue
         dialogue.reset()
+        game_won = True
+        subprocess.run(["python3", "QuechuaGame/main.py"])  # Adjust path as necessary
+
+    elif not inca.is_collision(chasqui):
+        dialogue.reset()
+        game_won = False
                     
     if not paused:
         all_sprites.update()
-    pg.display.set_caption("{:.2f}".format(clock.get_fps()))
-    screen.fill(DARKGRAY)
-    screen.blit(bg_image, (0, 0))  # Dibujar el fondo
 
-    all_sprites.draw(screen)
-    #pg.draw.ellipse(screen, WHITE, center_circle_rect)  # Dibuja el círculo central
+    pg.display.set_caption("{:.2f}".format(clock.get_fps()))
 
     if show_vectors:
         for sprite in mobs:
