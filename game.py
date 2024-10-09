@@ -115,9 +115,6 @@ class Obstacle(pg.sprite.Sprite):
         self.shape = shape  # Puede ser 'rect' o 'circle'
         
         if self.shape == "rect":
-            # Si el obstáculo es un rectángulo
-            #self.image = pg.Surface((w, h))
-            #self.image.fill(WHITE)
             #self.image = pg.image.load(image).convert_alpha()  # Carga la imagen cuadrada
             self.image = pg.image.load(image).convert_alpha() if image else pg.Surface((w, h))
             if image:  # Si se proporciona una imagen, escalarla
@@ -205,7 +202,7 @@ while running:
         pg.time.delay(2000)  # Pause for 2 seconds to let the player read the dialogue
         dialogue.reset()
         game_won = True
-        subprocess.run(["python3", "QuechuaGame/main.py"])  # Adjust path as necessary
+        subprocess.run(["python3", "AnimalShotLevel/main.py"])  # Adjust path as necessary
 
     elif not inca.is_collision(chasqui):
         dialogue.reset()
