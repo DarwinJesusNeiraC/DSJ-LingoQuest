@@ -45,3 +45,41 @@ class Dialogue:
         self.current_text = ""
         self.current_char_index = 0
         self.frame_count = 0
+
+
+# dialogues/dialogue.py
+import pygame as pg
+
+class InteractiveDialogue:
+    def __init__(self, width, height, text):
+        self.width = width
+        self.height = height
+        #self.text = text.split('\n')  # Divide el texto en líneas
+        self.text = text.splitlines()
+        self.current_line = 0
+        self.showing = False
+
+    def start(self):
+        self.current_line = 0
+        self.showing = True
+
+    def update(self, event):
+        if self.showing:
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:  # Avanza a la siguiente línea
+                    self.current_line += 1
+                    if self.current_line >= len(self.text):
+                        self.showing = False
+                elif event.key == pg.K_ESCAPE or event.key == pg.K_q:  # Sale del diálogo
+                    self.showing = False
+                    self.current_line = 0
+
+    def draw(self, screen):
+        if self.showing and self.current_line < len(self.text):
+            font = pg.font.Font(None, 36)
+            text_surface = font.render(self.text[self.current_line], True, (255, 255, 255))
+            screen.blit(text_surface, (self.width // 2 - text_surface.get_width() // 2, self.height // 2))
+
+    def reset(self):
+        self.current_line = 0
+        self.showing = False
