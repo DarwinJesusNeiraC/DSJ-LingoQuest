@@ -69,13 +69,13 @@ def handle_events(inca, dialogue, mobs, all_sprites, citizen_images):
             dialogue.update(event)
     return paused, show_vectors, running
 
-def update_game_logic(inca, chasqui, house, hospital, dialogue, all_sprites, paused):
+def update_game_logic(inca, chasqui, house, hospital, dialogue, all_sprites, paused, screen):
     if not paused:
         all_sprites.update()
     inca.move(pg.key.get_pressed(), 5)
-    handle_collisions(inca, chasqui, house, hospital, dialogue)
+    handle_collisions(inca, chasqui, house, hospital, dialogue, screen)
 
-def handle_collisions(inca, chasqui, house, hospital, dialogue):
+def handle_collisions(inca, chasqui, house, hospital, dialogue, screen):
     global game_won, house_collision_occurred, hospital_collision_occurred
     # Inicializar banderas de colisión si no están ya definidas
     if 'house_collision_occurred' not in globals():
@@ -85,7 +85,7 @@ def handle_collisions(inca, chasqui, house, hospital, dialogue):
     # Colisión con el personaje "chasqui"
     if inca.is_collision(chasqui) and not game_won:
         dialogue.start()
-        handle_dialogue_loop(dialogue)
+        handle_dialogue_loop(dialogue, screen)
         game_won = True
     # Colisión con la casa (solo una vez)
     elif inca.is_collision(house) and not house_collision_occurred:
@@ -131,7 +131,7 @@ def main():
     while running:
         clock.tick(FPS)
         paused, show_vectors, running = handle_events(inca, dialogue, mobs, all_sprites, citizen_images)
-        update_game_logic(inca, chasqui, house, hospital, dialogue, all_sprites, paused)
+        update_game_logic(inca, chasqui, house, hospital, dialogue, all_sprites, paused, screen)
         draw_screen(screen, bg_image, all_sprites, inca, chasqui, dialogue, show_vectors, mobs)
         pg.display.set_caption("{:.2f}".format(clock.get_fps()))
     
