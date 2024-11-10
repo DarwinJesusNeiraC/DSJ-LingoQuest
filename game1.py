@@ -14,6 +14,7 @@ from character import Character
 from dialogue import Dialogue
 import subprocess
 
+pythonVersion = "python"
 vec = pg.math.Vector2
 WIDTH = 800
 HEIGHT = 600
@@ -211,7 +212,7 @@ while running:
         pg.time.delay(2000)  # Pause for 2 seconds to let the player read the dialogue
         dialogue.reset()
         game_won = True
-        subprocess.run(["python3", "AnimalShotLevel/main.py"])  # Adjust path as necessary
+        subprocess.run([pythonVersion, "AnimalShotLevel/main.py"])  # Adjust path as necessary
 
     elif not inca.is_collision(chasqui):
         dialogue.reset()

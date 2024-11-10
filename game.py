@@ -1,10 +1,3 @@
-'''
-# @Author      : Darwin Neira Carrasco 
-# @Email       : dneirac@unsa.edu.pe
-# @File        : game
-#
-# @Description : 
-    '''
 # game.py
 import pygame as pg
 import subprocess
@@ -14,6 +7,8 @@ from dialogues.dialogue import InteractiveDialogue
 from mobs.mob import Mob
 from obstacles.obstacle import Obstacle
 
+pythonVersion = "python"
+
 def main():
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
@@ -21,6 +16,7 @@ def main():
     all_sprites = pg.sprite.Group()
     obstacles = pg.sprite.Group()
     mobs = pg.sprite.Group()
+    
 
     bg_image = pg.image.load('assets/floor.jpeg').convert()  # Cambia la ruta a tu imagen de fondo
 
@@ -37,7 +33,7 @@ def main():
     dialogue_text = "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!"
     dialogue = InteractiveDialogue(WIDTH, HEIGHT, dialogue_text)
 
-    Obstacle(0, 0, 150, 150, shape="rect", image="assets/hospital.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior izquierda
+    hospital = Obstacle(0, 0, 150, 150, shape="rect", image="assets/hospital.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior izquierda
     Obstacle(WIDTH - 150, 0, 150, 150, shape="rect", image="assets/house.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior derecha
     Obstacle(0, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina inferior izquierda
     Obstacle(WIDTH - 150, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina inferior derecha
@@ -114,10 +110,14 @@ def main():
             #pg.time.delay(2000)  # Pause for 2 seconds to let the player read the dialogue
             dialogue.reset()
             game_won = True
-            subprocess.run(["python3", "AnimalShotLevel/main.py"])  # Adjust path as necessary
-
-        elif inca.is_collision(house):  # Si choca con la casa
-            subprocess.run(["python3", "./ball.py"]) 
+            #subprocess.run([pythonVersion, "AnimalShotLevel/main.py"]) 
+        
+        elif inca.is_collision(house):  # Si choca con el hospital
+            subprocess.run([pythonVersion, "./ball.py"]) 
+            collision_occurred = True
+        
+        elif inca.is_collision(hospital):  # Si choca con la casa
+            subprocess.run([pythonVersion, "AnimalShotLevel/main.py"]) 
 
         elif not inca.is_collision(chasqui):
             dialogue.reset()
