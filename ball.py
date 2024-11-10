@@ -48,11 +48,11 @@ pregunta_actual = 0
 
 # Opciones de respuesta en cajas
 cajas = [
-    {"texto": "-wan"},
-    {"texto": "-kama"},
-    {"texto": "-paq"},
-    {"texto": "-kuna"},
-    {"texto": "-pi"}
+    {"texto": "-wan", "mensaje_error": "Incorrecto: - WAN: indica la preposición “con” y la conjunción “y”"},
+    {"texto": "-kama", "mensaje_error": "Incorrecto: - KAMA: reemplaza la preposición “hasta”, denota un punto en el espacio y tiempo"},
+    {"texto": "-paq", "mensaje_error": "Incorrecto: - PAQ: reemplaza la preposición “para”"},
+    {"texto": "-kuna", "mensaje_error": "Incorrecto: - KUNA: Pluraliza"},
+    {"texto": "-pi", "mensaje_error": "Incorrecto: - PI: reemplaza la preposición “en”"}
 ]
 cajas_posiciones = [(150 + i * 120, 150) for i in range(len(cajas))]
 
@@ -135,7 +135,7 @@ while running:
                         mensaje = "¡Felicidades! Has completado el juego"
                         running = False
                 else:
-                    mensaje = "¡Error! Intenta otra vez"
+                    mensaje = caja["mensaje_error"]
                 
                 # Resetear pelota y terminar lanzamiento
                 ball_pos = [400, 400]
