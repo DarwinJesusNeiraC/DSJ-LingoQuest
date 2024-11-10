@@ -1,10 +1,3 @@
-'''
-# @Author      : Darwin Neira Carrasco 
-# @Email       : dneirac@unsa.edu.pe
-# @File        : p_ball
-#
-# @Description : 
-'''
 import pygame
 import random
 
@@ -49,7 +42,7 @@ pregunta_actual = 0
 # Opciones de respuesta en cajas
 cajas = [
     {"texto": "-wan", "mensaje_error": "Incorrecto: - WAN: indica la preposición “con” y la conjunción “y”"},
-    {"texto": "-kama", "mensaje_error": "Incorrecto: - KAMA: reemplaza la preposición “hasta”, denota un punto en el espacio y tiempo"},
+    {"texto": "-kama", "mensaje_error": "Incorrecto: - KAMA: reemplaza la preposición “hasta”"},
     {"texto": "-paq", "mensaje_error": "Incorrecto: - PAQ: reemplaza la preposición “para”"},
     {"texto": "-kuna", "mensaje_error": "Incorrecto: - KUNA: Pluraliza"},
     {"texto": "-pi", "mensaje_error": "Incorrecto: - PI: reemplaza la preposición “en”"}
