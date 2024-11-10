@@ -50,12 +50,10 @@ class Dialogue:
 # dialogues/dialogue.py
 import pygame as pg
 
-class InteractiveDialogue:
-    def __init__(self, width, height, text):
-        self.width = width
-        self.height = height
-        #self.text = text.split('\n')  # Divide el texto en líneas
-        self.text = text.splitlines()
+class InteractiveDialogue(Dialogue):
+    def __init__(self, width, height, text, font_size=36):
+        super().__init__(width, height, text, font_size)  # Llama al constructor de Dialogue para inicializar el cuadro
+        self.text = text.splitlines()  # Divide el texto en líneas
         self.current_line = 0
         self.showing = False
 
@@ -64,22 +62,31 @@ class InteractiveDialogue:
         self.showing = True
 
     def update(self, event):
+        # Maneja la interacción con el diálogo
         if self.showing:
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:  # Avanza a la siguiente línea
+                if event.key == pg.K_SPACE:  # Avanza a la siguiente línea de texto
                     self.current_line += 1
                     if self.current_line >= len(self.text):
                         self.showing = False
-                elif event.key == pg.K_ESCAPE or event.key == pg.K_q:  # Sale del diálogo
+                elif event.key in [pg.K_ESCAPE, pg.K_q]:  # Cierra el diálogo
                     self.showing = False
                     self.current_line = 0
 
     def draw(self, screen):
+        # Si el diálogo está activo, muestra el cuadro de diálogo
         if self.showing and self.current_line < len(self.text):
-            font = pg.font.Font(None, 36)
-            text_surface = font.render(self.text[self.current_line], True, (255, 255, 255))
-            screen.blit(text_surface, (self.width // 2 - text_surface.get_width() // 2, self.height // 2))
+            # Llama a `show()` de `Dialogue` para mostrar el fondo y el borde del cuadro de diálogo
+            self.show(screen)
+            
+            # Renderiza la línea actual de diálogo
+            line_text = self.text[self.current_line]
+            dialogue_surface = self.font.render(line_text, True, BLACK)
+            
+            # Muestra la línea en el cuadro de diálogo, con un margen dentro del cuadro
+            screen.blit(dialogue_surface, (self.dialogue_box_x + 20, self.dialogue_box_y + 20))
 
     def reset(self):
+        super().reset()  # Llama a `reset` de Dialogue para reiniciar el texto
         self.current_line = 0
         self.showing = False
