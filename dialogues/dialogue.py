@@ -12,12 +12,12 @@ class Dialogue:
         self.dialogue_lines = dialogue_text.split("\n")
         self.current_text = ""
         self.current_char_index = 0
-        self.text_display_speed = 2  # Velocidad en la que se muestran las letras (mayor número = más lento)
+        self.text_display_speed = 15  # Velocidad en la que se muestran las letras (mayor número = más lento)
         self.frame_count = 0
 
         # Dimensiones del cuadro de diálogo
-        self.dialogue_box_width = 400
-        self.dialogue_box_height = 100
+        self.dialogue_box_width = 780
+        self.dialogue_box_height = 300
         self.dialogue_box_x = (screen_width - self.dialogue_box_width) // 2  # Centrar el cuadro
         self.dialogue_box_y = screen_height - self.dialogue_box_height - 20  # Abajo, con un margen de 20px
 
@@ -50,43 +50,37 @@ class Dialogue:
 # dialogues/dialogue.py
 import pygame as pg
 
+import pygame as pg
+from .dialogue import Dialogue
+
 class InteractiveDialogue(Dialogue):
-    def __init__(self, width, height, text, font_size=36):
-        super().__init__(width, height, text, font_size)  # Llama al constructor de Dialogue para inicializar el cuadro
+    def __init__(self, width, height, text, font_size=30):
+        super().__init__(width, height, text, font_size)
         self.text = text.splitlines()  # Divide el texto en líneas
         self.current_line = 0
-        self.showing = False
+        self.showing = False  # Indicador de si el diálogo está visible
 
     def start(self):
         self.current_line = 0
         self.showing = True
 
     def update(self, event):
-        # Maneja la interacción con el diálogo
         if self.showing:
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_SPACE:  # Avanza a la siguiente línea de texto
-                    self.current_line += 1
-                    if self.current_line >= len(self.text):
-                        self.showing = False
-                elif event.key in [pg.K_ESCAPE, pg.K_q]:  # Cierra el diálogo
-                    self.showing = False
-                    self.current_line = 0
+                if event.key == pg.K_SPACE:  # Al presionar espacio, mostrar todo el diálogo y luego cerrarlo
+                    self.current_line = len(self.text)  # Mostrar todo el texto
+                    self.showing = False  # Salir del diálogo
 
     def draw(self, screen):
         # Si el diálogo está activo, muestra el cuadro de diálogo
-        if self.showing and self.current_line < len(self.text):
-            # Llama a `show()` de `Dialogue` para mostrar el fondo y el borde del cuadro de diálogo
+        if self.showing or self.current_line < len(self.text):
             self.show(screen)
-            
-            # Renderiza la línea actual de diálogo
-            line_text = self.text[self.current_line]
-            dialogue_surface = self.font.render(line_text, True, BLACK)
-            
-            # Muestra la línea en el cuadro de diálogo, con un margen dentro del cuadro
-            screen.blit(dialogue_surface, (self.dialogue_box_x + 20, self.dialogue_box_y + 20))
+            # Renderizar todo el diálogo de una vez
+            for i, line in enumerate(self.text):
+                dialogue_surface = self.font.render(line, True, BLACK)
+                screen.blit(dialogue_surface, (self.dialogue_box_x + 10, self.dialogue_box_y + 10 + i * 15))
 
     def reset(self):
-        super().reset()  # Llama a `reset` de Dialogue para reiniciar el texto
+        super().reset()  # Reinicia el diálogo
         self.current_line = 0
         self.showing = False
