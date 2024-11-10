@@ -76,18 +76,30 @@ def update_game_logic(inca, chasqui, house, hospital, dialogue, all_sprites, pau
     handle_collisions(inca, chasqui, house, hospital, dialogue)
 
 def handle_collisions(inca, chasqui, house, hospital, dialogue):
-    global game_won
+    global game_won, house_collision_occurred, hospital_collision_occurred
+    # Inicializar banderas de colisión si no están ya definidas
+    if 'house_collision_occurred' not in globals():
+        house_collision_occurred = False
+    if 'hospital_collision_occurred' not in globals():
+        hospital_collision_occurred = False
+    # Colisión con el personaje "chasqui"
     if inca.is_collision(chasqui) and not game_won:
         dialogue.start()
         handle_dialogue_loop(dialogue)
         game_won = True
-    elif inca.is_collision(house):
+    # Colisión con la casa (solo una vez)
+    elif inca.is_collision(house) and not house_collision_occurred:
         subprocess.run([pythonVersion, "./ball.py"])
-    elif inca.is_collision(hospital):
+        house_collision_occurred = True  # Marcar que la colisión con la casa ya ocurrió
+    # Colisión con el hospital (solo una vez)
+    elif inca.is_collision(hospital) and not hospital_collision_occurred:
         subprocess.run([pythonVersion, "AnimalShotLevel/main.py"])
+        hospital_collision_occurred = True  # Marcar que la colisión con el hospital ya ocurrió
+    # Reinicio del diálogo y del estado de victoria si no hay colisión con "chasqui"
     elif not inca.is_collision(chasqui):
         dialogue.reset()
         game_won = False
+
 
 def handle_dialogue_loop(dialogue, screen):
     running = True
