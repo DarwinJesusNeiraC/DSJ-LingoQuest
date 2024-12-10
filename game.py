@@ -6,6 +6,7 @@ from characters.character import Character
 from dialogues.dialogue import InteractiveDialogue
 from mobs.mob import Mob
 from obstacles.obstacle import Obstacle
+from ball import juego_pelota  # Importamos la función juego_pelota de ball.py
 
 pythonVersion = "python"
 
@@ -113,7 +114,12 @@ def main():
             #subprocess.run([pythonVersion, "AnimalShotLevel/main.py"]) 
         
         elif inca.is_collision(house):  # Si choca con el hospital
-            subprocess.run([pythonVersion, "./ball.py"]) 
+            #subprocess.run([pythonVersion, "./ball.py"]) 
+            juego_terminado = juego_pelota(screen)
+
+        # Si el jugador gana en juego_pelota, vuelve a la pantalla principal o termina
+            if juego_terminado:
+                print("El jugador ha ganado. Volviendo al juego principal.")
             collision_occurred = True
         
         elif inca.is_collision(hospital):  # Si choca con la casa
