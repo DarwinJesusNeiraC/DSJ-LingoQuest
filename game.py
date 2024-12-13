@@ -1,143 +1,124 @@
-# game.py
 import pygame as pg
-import subprocess
-from config import * 
+from config import *
+from ball import BallGameScene
+from AnimalShotLevel.main import AnimalShotScene
 from characters.character import Character
 from dialogues.dialogue import InteractiveDialogue
 from mobs.mob import Mob
 from obstacles.obstacle import Obstacle
-from ball import juego_pelota  # Importamos la función juego_pelota de ball.py
 
-pythonVersion = "python"
+class MainScene:
+    def __init__(self, screen):
+        self.screen = screen
+        self.all_sprites = pg.sprite.Group()
+        self.obstacles = pg.sprite.Group()
+        self.mobs = pg.sprite.Group()
+        self.inca = Character('assets/inca.png', WIDTH // 2, HEIGHT // 2 - 80, 50, 50)
+        self.chasqui = Character('assets/chasqui.png', WIDTH // 2, HEIGHT // 2 + 80, 50, 50)
+        self.dialogue = InteractiveDialogue(WIDTH, HEIGHT, "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!")
+        self.obstacles = pg.sprite.Group()
+        self.bg_image = pg.image.load('assets/floor.jpeg').convert()
+
+
+        # Crear obstáculos
+        self.hospital = Obstacle(0, 0, 150, 150, shape="rect", image="assets/hospital.png", obstacles=self.obstacles)
+        self.house = Obstacle(WIDTH - 150, 0, 150, 150, shape="rect", image="assets/house.png", obstacles=self.obstacles)
+        self.market = Obstacle(0, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", obstacles=self.obstacles)
+        self.secondMarket = Obstacle(WIDTH - 150, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", obstacles=self.obstacles )  
+
+        self.font = Obstacle(WIDTH // 2, HEIGHT // 2, 200, 200, shape="circle", image="assets/font.png", obstacles=self.obstacles)
+
+        # Cargar imágenes de ciudadanos
+        citizen_images = [
+            pg.transform.scale(pg.image.load('assets/citizen1.png').convert_alpha(), (50, 50)),
+            pg.transform.scale(pg.image.load('assets/citizen2.png').convert_alpha(), (50, 50)),
+            pg.transform.scale(pg.image.load('assets/citizen3.png').convert_alpha(), (50, 50)),
+        ]
+
+        # Crear ciudadanos (mobs)
+        for _ in range(5):  # Cambia el número según la cantidad de ciudadanos que quieras
+            Mob(self.all_sprites, self.mobs, citizen_images, self.obstacles)
+
+        self.running = True
+
+    def run(self, events, keys):
+        self.screen.fill(DARKGRAY)
+        self.screen.blit(self.bg_image, (0, 0))
+
+        # Actualizar y dibujar sprites
+        self.all_sprites.update()
+        self.all_sprites.draw(self.screen)
+
+        self.inca.move(keys, 5)
+        self.inca.draw(self.screen)
+        self.chasqui.draw(self.screen)
+        self.obstacles.draw(self.screen)
+
+        # Detectar colisión
+        if self.inca.is_collision(self.chasqui):
+            self.dialogue.start()
+            self.dialogue.draw(self.screen)
+        elif self.inca.is_collision(self.house):  # Choca con la casa
+            return 'ball_game'
+        elif self.inca.is_collision(self.hospital):  # Choca con el hospital
+            return 'animal_shot'
+
+        return 'main'
+
+class SceneManager:
+    def __init__(self, screen):
+        self.screen = screen
+        self.scenes = {
+            'main': MainScene(screen),
+            'ball_game': BallGameScene(screen),
+            'animal_shot': AnimalShotScene(screen)
+        }
+        self.current_scene = 'main'
+        self.last_scene = None
+        self.change_time = None
+
+    def change_scene(self, scene_name):
+        if self.current_scene != scene_name:
+            self.last_scene = self.current_scene
+            self.current_scene = scene_name
+            self.change_time = pg.time.get_ticks()
+        #self.current_scene = scene_name
+
+    def reset_scene(self, scene_name):
+        if scene_name == 'ball_game':
+            self.scenes['ball_game'] = BallGameScene(self.screen)
+        elif scene_name == 'animal_shot':
+            self.scenes['animal_shot'] = AnimalShotScene(self.screen) 
+
+    def run(self, events, keys):
+        if self.change_time and pg.time.get_ticks() - self.change_time > 5000:  # 5 segundos
+            if self.last_scene in ['ball_game', 'animal_shot']:
+                self.reset_scene(self.last_scene)
+            self.change_time = None
+        new_scene = self.scenes[self.current_scene].run(events, keys)
+        if new_scene != self.current_scene:
+            self.change_scene(new_scene)
 
 def main():
     pg.init()
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     clock = pg.time.Clock()
-    all_sprites = pg.sprite.Group()
-    obstacles = pg.sprite.Group()
-    mobs = pg.sprite.Group()
-    
 
-    bg_image = pg.image.load('assets/floor.jpeg').convert()  # Cambia la ruta a tu imagen de fondo
+    scene_manager = SceneManager(screen)
 
-    # Cargar personajes
-    inca = Character('assets/inca.png', WIDTH // 2, HEIGHT // 2 - 80, 50, 50)  # Arriba de la fuente
-    chasqui = Character('assets/chasqui.png', WIDTH // 2, HEIGHT // 2 + 80, 50, 50)  # Debajo de la fuente
-
-    """
-    # Crear diálogo
-    dialogue_text = "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!"
-    dialogue = Dialogue(WIDTH, HEIGHT, dialogue_text)
-    """
-    # Crear diálogos
-    dialogue_text = "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!"
-    dialogue = InteractiveDialogue(WIDTH, HEIGHT, dialogue_text)
-
-    hospital = Obstacle(0, 0, 150, 150, shape="rect", image="assets/hospital.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior izquierda
-    Obstacle(WIDTH - 150, 0, 150, 150, shape="rect", image="assets/house.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior derecha
-    Obstacle(0, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina inferior izquierda
-    Obstacle(WIDTH - 150, HEIGHT - 150, 150, 150, shape="rect", image="assets/market.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina inferior derecha
-    Obstacle(WIDTH // 2, HEIGHT // 2, 200, 200, shape="circle", image="assets/font.png", all_sprites=all_sprites, obstacles=obstacles)  # Círculo en el centro
-
-    house = Obstacle(WIDTH - 150, 0, 150, 150, shape="rect", image="assets/house.png", all_sprites=all_sprites, obstacles=obstacles)  # esquina superior derecha
-    citizen_images = [
-            pg.transform.scale(pg.image.load('assets/citizen1.png').convert_alpha(), (MOB_SIZE, MOB_SIZE)),
-            pg.transform.scale(pg.image.load('assets/citizen2.png').convert_alpha(), (MOB_SIZE, MOB_SIZE)),
-            pg.transform.scale(pg.image.load('assets/citizen3.png').convert_alpha(), (MOB_SIZE, MOB_SIZE)),
-            ]
-
-    """
-    # Crear mobs
-    for i in range(5):
-        Mob(all_sprites, mobs, citizen_images)
-    """
-    for i in range(5):
-        Mob(all_sprites, mobs, citizen_images, obstacles)
-
-    paused = False
-    show_vectors = False
     running = True
-    game_won = False
     while running:
-        clock.tick(FPS)
-        for event in pg.event.get():
+        events = pg.event.get()
+        keys = pg.key.get_pressed()
+
+        for event in events:
             if event.type == pg.QUIT:
                 running = False
 
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    running = False
-                if event.key == pg.K_SPACE:
-                    paused = not paused
-                if event.key == pg.K_v:
-                    show_vectors = not show_vectors
-                if event.key == pg.K_m:
-                    Mob(all_sprites, mobs, citizen_images)
+        scene_manager.run(events, keys)
 
-                dialogue.update(event)
-        # Mover al inca con las teclas
-        keys = pg.key.get_pressed()
-        inca.move(keys, 5)
-
-        if not paused:
-            all_sprites.update()
-
-        # Fill the screen and draw background first
-        screen.fill(DARKGRAY)
-        screen.blit(bg_image, (0, 0))  # Draw background
-
-        all_sprites.draw(screen)
-        inca.draw(screen)
-        chasqui.draw(screen)
-
-        # Detectar colisión y mostrar diálogo
-        if inca.is_collision(chasqui) and not game_won:
-            dialogue.start()
-            #dialogue.show(screen)
-            pg.display.flip()  # Ensure the dialogue is displayed before the next step
-                # Aquí podrías tener un bucle adicional para manejar la entrada durante el diálogo
-            while dialogue.showing:  # Mantén el diálogo activo mientras esté "mostrando"
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        running = False
-                    dialogue.update(event)  # Actualiza el diálogo
-
-                # Dibuja el diálogo en la pantalla
-                dialogue.draw(screen)
-
-                pg.display.flip()  # Actualiza la pantalla
-                pg.time.delay(100)  # Breve pausa para evitar el uso excesivo de CPU
-            #pg.time.delay(2000)  # Pause for 2 seconds to let the player read the dialogue
-            dialogue.reset()
-            game_won = True
-            #subprocess.run([pythonVersion, "AnimalShotLevel/main.py"]) 
-        
-        elif inca.is_collision(house):  # Si choca con el hospital
-            #subprocess.run([pythonVersion, "./ball.py"]) 
-            juego_terminado = juego_pelota(screen)
-
-        # Si el jugador gana en juego_pelota, vuelve a la pantalla principal o termina
-            if juego_terminado:
-                print("El jugador ha ganado. Volviendo al juego principal.")
-            collision_occurred = True
-        
-        elif inca.is_collision(hospital):  # Si choca con la casa
-            subprocess.run([pythonVersion, "AnimalShotLevel/main.py"]) 
-
-        elif not inca.is_collision(chasqui):
-            dialogue.reset()
-            game_won = False
-
-        if not paused:
-            all_sprites.update()
-
-        pg.display.set_caption("{:.2f}".format(clock.get_fps()))
-
-        if show_vectors:
-            for sprite in mobs:
-                sprite.draw_vectors()
         pg.display.flip()
+        clock.tick(FPS)
 
     pg.quit()
 
