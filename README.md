@@ -9,7 +9,7 @@ Este es un juego interactivo desarrollado como parte de un trabajo colaborativo.
 
 ## Descripción
 
-Este juego se ejecuta a través del archivo `game.py`. En él, el jugador podrá disfrutar de dos niveles interactivos en los que se utilizarán diferentes controles según la situación.
+Este juego se ejecuta a través del archivo `game.py` (python game.py). En él, el jugador podrá disfrutar de dos niveles interactivos en los que se utilizarán diferentes controles según la situación.
 
 ### Instrucciones de control
 
