@@ -10,6 +10,11 @@ class AnimalShotScene:
             pg.image.load(os.path.join(os.path.dirname(__file__), 'assets/background.jpg')), (800, 600)
         )
 
+        music_path = os.path.join(os.path.dirname(__file__), 'assets/music.mp3')
+        if os.path.exists(music_path):
+            pg.mixer.music.load(music_path)
+            pg.mixer.music.play(-1)
+
         # Jugador
         self.player_img = pg.image.load(os.path.join(os.path.dirname(__file__), 'assets/ufo.png'))
         self.player_img = pg.transform.scale(self.player_img, (50, 50))
