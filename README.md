@@ -1,4 +1,5 @@
 # Proyecto: LingoQuest
+https://github.com/user-attachments/assets/59d71538-c8d7-46cb-844c-b1dea9701c94
 
 Este es un juego interactivo desarrollado como parte de un trabajo colaborativo. Los participantes en el proyecto son:
 
