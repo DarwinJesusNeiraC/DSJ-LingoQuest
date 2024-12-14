@@ -39,5 +39,7 @@ Para ejecutar este juego, necesitas tener **Python** y las siguientes dependenci
    ```bash
    git clone https://github.com/DarwinJesusNeiraC/DSJ-LingoQuest.git
 2. **Gramática básica del quechua**
-- [ir a documento]((https://docs.google.com/document/d/1JIWxGgOXwjdz6IY-rmoJwBVeagu4G8WCPideH7_IaQM/edit?usp=sharing))
+- [ir al documento](https://docs.google.com/document/d/1JIWxGgOXwjdz6IY-rmoJwBVeagu4G8WCPideH7_IaQM/edit?usp=sharing)
+- 
+
 
