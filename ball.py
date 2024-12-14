@@ -43,6 +43,9 @@ class BallGameScene:
         self.mensaje = ""
         self.font = pg.font.Font(None, 28)
 
+        self.launch_time = 0 
+        self.reset_time_limit = 1500
+
     def calcular_guia_puntos(self, start_pos, vel_x, vel_y, num_puntos=15):
         puntos = []
         temp_x, temp_y = start_pos
@@ -67,6 +70,7 @@ class BallGameScene:
             elif event.type == pg.MOUSEBUTTONUP and self.is_dragging:
                 self.is_dragging = False
                 self.is_launched = True
+                self.launch_time = pg.time.get_ticks()
                 end_pos = pg.mouse.get_pos()
                 self.velocity_x = (end_pos[0] - self.start_pos[0]) * 0.1
                 self.velocity_y = (end_pos[1] - self.start_pos[1]) * 0.1
@@ -103,6 +107,20 @@ class BallGameScene:
             self.ball_pos[1] += self.velocity_y
             self.velocity_y += self.gravity
 
+            if self.ball_pos[0] - self.ball_radius < 0: 
+                self.ball_pos[0] = self.ball_radius 
+                self.velocity_x = -self.velocity_x
+            elif self.ball_pos[0] + self.ball_radius > self.WIDTH: 
+                self.ball_pos[0] = self.WIDTH - self.ball_radius 
+                self.velocity_x = -self.velocity_x
+            
+            if self.ball_pos[1] - self.ball_radius < 0: 
+                self.ball_pos[1] = self.ball_radius 
+                self.velocity_y = -self.velocity_y
+            elif self.ball_pos[1] + self.ball_radius > self.HEIGHT: 
+                self.ball_pos[1] = self.HEIGHT - self.ball_radius 
+                self.velocity_y = -self.velocity_y
+
             ball_rect = pg.Rect(self.ball_pos[0] - self.ball_radius, self.ball_pos[1] - self.ball_radius, self.ball_radius * 2, self.ball_radius * 2)
             for i, caja in enumerate(self.cajas):
                 caja_rect = pg.Rect(self.cajas_posiciones[i][0], self.cajas_posiciones[i][1], 100, 50)
@@ -111,7 +129,7 @@ class BallGameScene:
                         self.mensaje = "¡Correcto!"
                         self.pregunta_actual += 1
                         if self.pregunta_actual >= len(self.preguntas):
-                            self.mensaje = "¡Felicidades! Has completado el juego"
+                            self.mensaje = "¡Felicidades! Usa la app para ver el AR"
                             return 'main'
                     else:
                         self.mensaje = caja["mensaje_error"]
@@ -119,7 +137,9 @@ class BallGameScene:
                     self.ball_pos = [400, 400]
                     self.is_launched = False
                     break
-
+            if pg.time.get_ticks() - self.launch_time > self.reset_time_limit: 
+                self.ball_pos = [400, 400] 
+                self.is_launched = False
         # Dibujar pelota
         pg.draw.circle(self.screen, self.GREEN, (int(self.ball_pos[0]), int(self.ball_pos[1])), self.ball_radius)
 

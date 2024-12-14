@@ -70,7 +70,7 @@ class InteractiveDialogue(Dialogue):
                 if event.key == pg.K_SPACE:  # Al presionar espacio, mostrar todo el diálogo y luego cerrarlo
                     self.current_line = len(self.text)  # Mostrar todo el texto
                     self.showing = False  # Salir del diálogo
-
+    """
     def draw(self, screen):
         # Si el diálogo está activo, muestra el cuadro de diálogo
         if self.showing or self.current_line < len(self.text):
@@ -79,6 +79,19 @@ class InteractiveDialogue(Dialogue):
             for i, line in enumerate(self.text):
                 dialogue_surface = self.font.render(line, True, BLACK)
                 screen.blit(dialogue_surface, (self.dialogue_box_x + 10, self.dialogue_box_y + 10 + i * 15))
+    """
+    def draw(self, screen):
+        if self.showing:
+            self.show(screen)
+            for i, line in enumerate(self.text):
+                dialogue_surface = self.font.render(line, True, BLACK)
+                screen.blit(dialogue_surface, (self.dialogue_box_x + 20, self.dialogue_box_y + 20 + i * 30))
+
+            # Si el diálogo completo ha sido mostrado, permite cerrarlo con la tecla Espacio
+            if self.current_line >= len(self.text):
+                prompt_surface = self.font.render("Presiona ESPACIO para continuar", True, BLACK)
+                screen.blit(prompt_surface, (self.dialogue_box_x + 20, self.dialogue_box_y + self.dialogue_box_height - 40))
+
 
     def reset(self):
         super().reset()  # Reinicia el diálogo
