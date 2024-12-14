@@ -17,7 +17,7 @@ class MainScene:
         self.mobs = pg.sprite.Group()
         self.inca = Character('assets/inca.png', WIDTH // 2, HEIGHT // 2 - 80, 50, 50)
         self.chasqui = Character('assets/chasqui.png', WIDTH // 2, HEIGHT // 2 + 80, 50, 50)
-        self.dialogue = InteractiveDialogue(WIDTH, HEIGHT, "Inca: ¡Hola, Chasqui!\nChasqui: ¡Hola, Inca!")
+        self.dialogue = InteractiveDialogue(WIDTH, HEIGHT, "Inca: ¡Hola! En esta aventura aprenderemos el idioma Quechua,\nvocabulario de animales y gramática de sufijos de caso.\nChasqui: ¡Hola, Inca! ¡Vamos para allá!\n")
         self.obstacles = pg.sprite.Group()
         self.bg_image = pg.image.load('assets/floor.jpeg').convert()
 
